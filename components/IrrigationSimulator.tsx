@@ -7,12 +7,28 @@ import toast from "react-hot-toast";
 
 type Mode = "auto" | "manual" | "ml";
 
-export default function IrrigationSimulator({ selectedCrop = "Wheat", selectedSoil = "Loamy", areaAcres = 2 }) {
+type ManualInputs = {
+  mean_temp: number;
+  max_temp: number;
+  min_temp: number;
+  humidity: number;
+  wind_speed: number;
+  rainfall: number;
+  initial_soil_moisture: number;
+};
+
+type IrrigationSimulatorProps = {
+  selectedCrop?: string;
+  selectedSoil?: string;
+  areaAcres?: number;
+};
+
+export default function IrrigationSimulator({ selectedCrop = "Wheat", selectedSoil = "Loamy", areaAcres = 2 }: IrrigationSimulatorProps) {
   const [mode, setMode] = useState<Mode>("auto");
   const [loading, setLoading] = useState(false);
   const [simulationData, setSimulationData] = useState<any>(null);
 
-  const [manualInputs, setManualInputs] = useState({
+  const [manualInputs, setManualInputs] = useState<ManualInputs>({
     mean_temp: 32,
     max_temp: 38,
     min_temp: 24,
@@ -33,7 +49,7 @@ export default function IrrigationSimulator({ selectedCrop = "Wheat", selectedSo
     toast.success(`${preset.charAt(0).toUpperCase() + preset.slice(1)} preset applied`);
   };
 
-  const handleInputChange = (field: string, value: number) => {
+  const handleInputChange = (field: keyof ManualInputs, value: number) => {
     setManualInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -220,7 +236,16 @@ export default function IrrigationSimulator({ selectedCrop = "Wheat", selectedSo
 }
 
 // Simple internal slider component
-function ControlSlider({ label, value, min, max, onChange, icon }: any) {
+type ControlSliderProps = {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (value: number) => void;
+  icon?: React.ReactNode;
+};
+
+function ControlSlider({ label, value, min, max, onChange, icon }: ControlSliderProps) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex justify-between items-center text-sm font-medium text-gray-700">

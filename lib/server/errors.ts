@@ -47,10 +47,11 @@ export function internal(message = "Internal server error") {
 export function handleApiError(err: any): NextResponse {
   // Zod validation error
   if (err instanceof ZodError) {
+    const zodErr = err as ZodError<any>;
     return NextResponse.json(
       {
         error: "Validation failed",
-        details: err.errors.map((e) => ({
+        details: zodErr.issues.map((e) => ({
           field: e.path.join("."),
           message: e.message,
         })),
