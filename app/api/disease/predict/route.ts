@@ -1,5 +1,6 @@
 // ──────────────────────────────────────────────
-// POST /api/disease/predict – Disease detection from image
+// POST /api/disease/predict – Disease detection via deployed Plant-Disease-Model
+// Calls: https://plant-disease-model.vercel.app/predict
 // ──────────────────────────────────────────────
 
 import { NextResponse } from "next/server";
@@ -13,13 +14,7 @@ const predictSchema = z.object({
   imageBase64: z.string().optional(),
 });
 
-// Mock disease detection results (in production, call ML microservice)
-const DISEASE_DB: Record<string, { confidence: number; treatment: string; severity: string }> = {
-  "Wheat Rust": { confidence: 0.92, treatment: "Apply Propiconazole 25% EC @ 1ml/L water. Spray immediately.", severity: "high" },
-  "Rice Blast": { confidence: 0.88, treatment: "Apply Tricyclazole 75% WP @ 0.6g/L water.", severity: "high" },
-  "Blight": { confidence: 0.85, treatment: "Apply Mancozeb 75% WP @ 2.5g/L or Copper Oxychloride.", severity: "medium" },
-  "Healthy": { confidence: 0.95, treatment: "No treatment needed. Continue regular monitoring.", severity: "none" },
-};
+const ML_API_URL = "https://plant-disease-model.vercel.app/predict";
 
 export async function POST(req: Request) {
   try {
@@ -29,38 +24,58 @@ export async function POST(req: Request) {
     let detected = "Unknown";
     let confidence = 0;
 
-    // Call the external ML API
     if (validated.imageBase64) {
       try {
-        const mlRes = await fetch("https://plant-disease-model.vercel.app/api/predict", {
+        // The Flask API expects: { "image": "data:image/png;base64,..." }
+        // and internally does data.split(',')[1] to get the raw base64.
+        // Our frontend sends a full data URL, so pass it directly.
+        const imageData = validated.imageBase64;
+
+        const mlRes = await fetch(ML_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: validated.imageBase64 }),
+          body: JSON.stringify({ image: imageData }),
         });
 
         if (mlRes.ok) {
           const mlData = await mlRes.json();
-          // The API might return { result: "Healthy", confidence: 0.99 } or similar.
-          // Since we know it predicts healthy and diseased:
-          detected = mlData.result || mlData.disease || mlData.class || "Unknown";
-          confidence = mlData.confidence || mlData.probability || 0.85; // Fallback
+          // Flask API returns: { "result": "Healthy ✅" or "Diseased ❌", "confidence": 92.3 }
+          console.log("ML API response:", JSON.stringify(mlData));
+
+          const rawResult = (mlData.result || "").toString();
+
+          // Clean up emojis from the result string
+          if (rawResult.toLowerCase().includes("healthy")) {
+            detected = "Healthy";
+          } else if (rawResult.toLowerCase().includes("diseased")) {
+            detected = "Diseased";
+          } else {
+            detected = rawResult.replace(/[❌✅🟢🔴]/g, "").trim() || "Unknown";
+          }
+
+          // Confidence comes as a percentage number (e.g. 92.3)
+          confidence = typeof mlData.confidence === "number" ? mlData.confidence : 0;
         } else {
-          console.error("External ML API failed", mlRes.status);
-          detected = "Diseased"; // Fallback if API fails but we must return something
-          confidence = 0.5;
+          const errText = await mlRes.text();
+          console.error("ML API failed:", mlRes.status, errText);
+          detected = "Unknown";
+          confidence = 0;
         }
       } catch (err) {
-        console.error("Failed to connect to ML API", err);
-        detected = "Diseased";
-        confidence = 0.5;
+        console.error("Failed to connect to Plant-Disease-Model API:", err);
+        detected = "Unknown";
+        confidence = 0;
       }
     }
 
-    const info = DISEASE_DB[detected] || {
-      confidence,
-      severity: detected.toLowerCase().includes("healthy") ? "none" : "medium",
-      treatment: detected.toLowerCase().includes("healthy") ? "No treatment needed." : "General treatment advisory.",
-    };
+    const isHealthy = detected.toLowerCase().includes("healthy");
+
+    // Treatment advice based on result
+    const treatment = isHealthy
+      ? "No treatment needed. Your crop looks healthy! Continue regular monitoring."
+      : "Consult your local agricultural officer. Apply appropriate fungicide/pesticide based on the specific disease identified. Remove and destroy infected plant parts.";
+
+    const severity = isHealthy ? "none" : confidence > 80 ? "high" : confidence > 50 ? "medium" : "low";
 
     // Log to database if fieldId provided
     if (validated.fieldId) {
@@ -74,14 +89,14 @@ export async function POST(req: Request) {
           treatment_applied: null,
           date: new Date().toISOString(),
         }])
-        .then(() => {}); // Don't fail if field doesn't exist yet
+        .then(() => {});
     }
 
     return NextResponse.json({
       disease: detected,
       confidence: confidence,
-      severity: info.severity,
-      treatment: info.treatment,
+      severity,
+      treatment,
       preventive_measures: [
         "Use disease-resistant varieties",
         "Maintain proper spacing between plants",

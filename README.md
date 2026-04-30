@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgriSaarthi - Deployment Guide
 
-## Getting Started
+This guide covers the deployment process for both the Next.js Frontend/API and the Flask ML Microservice.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Node.js** 18+ and **npm**
+- **Python** 3.8+
+- Accounts for Firebase, Supabase, Twilio, Redis, OpenWeatherMap, Anthropic (for API keys)
+
+---
+
+## 1. Environment Setup
+
+Create a `.env.local` or `.env` file in the root directory (`/agrisaarthi`) and configure the following variables:
+
+```env
+# ── Firebase (Client SDK) ──
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+NEXT_PUBLIC_IVR_NUMBER=your_ivr_number
+
+# ── Supabase ──
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# ── Redis ──
+REDIS_URL=redis://localhost:6379
+
+# ── External APIs ──
+DATA_GOV_IN_API_KEY=your_data_gov_in_api_key
+OPENWEATHER_API_KEY=your_openweather_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# ── Twilio ──
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+
+# ── Firebase Admin (Server SDK) ──
+FIREBASE_SERVICE_ACCOUNT_KEY={"type": "service_account", ...}
+
+# ── App ──
+NODE_ENV=development # change to production for deployment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 2. Frontend & Next.js API Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The main application is a Next.js full-stack app containing the UI, middleware, and Next.js API routes.
 
-## Learn More
+### Local Development
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   *(If you get `sh: next: command not found`, ensure `npm install` finishes successfully).*
+3. Open [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+### Production Deployment (Vercel)
+The easiest way to deploy the Next.js app is via Vercel.
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com/) and import your repository.
+3. In the **Environment Variables** section, paste all the keys from your `.env` file.
+4. Note: The `vercel.json` file is already configured to run background cron jobs (irrigation, price-alerts, weather). Vercel will automatically detect and set these up.
+5. Click **Deploy**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. ML Microservice Setup
 
-## Deploy on Vercel
+The ML microservice is a Flask API serving Python-based ML models for irrigation predictions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Local Development
+1. Navigate to the ML microservice directory:
+   ```bash
+   cd ml_microservice
+   ```
+2. Create and activate a virtual environment (optional but recommended):
+   ```bash
+   python -m venv venv
+   
+   # On macOS/Linux:
+   source venv/bin/activate  
+   
+   # On Windows:
+   venv\Scripts\activate
+   ```
+3. Install dependencies:
+   There is no explicit `requirements.txt` yet, so install the packages manually:
+   ```bash
+   pip install Flask flask-cors joblib scikit-learn
+   ```
+4. Run the Flask server:
+   ```bash
+   python app.py
+   ```
+   The ML API will be accessible at [http://localhost:5000](http://localhost:5000).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Production Deployment
+For production, the ML microservice should be deployed as an independent service on platforms like Render, Railway, or Heroku.
+1. Generate a `requirements.txt` file first:
+   ```bash
+   pip freeze > requirements.txt
+   ```
+2. You will also want to replace `app.run(...)` with a production WSGI server like `gunicorn`. Add `gunicorn` to your requirements:
+   ```bash
+   pip install gunicorn
+   ```
+3. Create a `Procfile` in the `ml_microservice` folder if required by your hosting provider:
+   ```
+   web: gunicorn app:app
+   ```
+4. Deploy the `ml_microservice` folder.
+5. **CRITICAL:** Update your Next.js application's environment variables or hardcoded fetch URLs to point to the new deployed ML microservice URL instead of `http://localhost:5000`.

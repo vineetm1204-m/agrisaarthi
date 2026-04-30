@@ -204,3 +204,42 @@ export async function getMonthlyStats(farmerId: string, monthStart: Date) {
     return {};
   }
 }
+
+export async function getIvrSettings(farmerId: string): Promise<IvrSettings | null> {
+  if (!farmerId) return null;
+  try {
+    const { data: farmer, error } = await supabase
+      .from("farmers")
+      .select("ivr_enabled, ivr_number")
+      .eq("id", farmerId)
+      .single();
+
+    if (error || !farmer) return null;
+
+    return {
+      enabled: farmer.ivr_enabled ?? true,
+      number: farmer.ivr_number ?? null,
+    };
+  } catch (err) {
+    console.warn("Unable to get IVR settings:", err);
+    return null;
+  }
+}
+
+export async function setIvrSettings(farmerId: string, settings: IvrSettings): Promise<void> {
+  if (!farmerId) return;
+  try {
+    const { error } = await supabase
+      .from("farmers")
+      .update({
+        ivr_enabled: settings.enabled,
+        ivr_number: settings.number,
+      })
+      .eq("id", farmerId);
+
+    if (error) throw error;
+  } catch (err) {
+    console.warn("Unable to set IVR settings:", err);
+    throw err;
+  }
+}

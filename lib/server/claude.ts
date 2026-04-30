@@ -1,26 +1,83 @@
 // ──────────────────────────────────────────────
-// Anthropic Claude API Helper
+// AI Helper — Gemini primary, OpenRouter fallback
+// Automatically retries with fallback provider
 // ──────────────────────────────────────────────
 
-import Anthropic from "@anthropic-ai/sdk";
+// ─── Provider configs ───
+const GEMINI_MODEL = "gemini-2.0-flash";
+const OPENROUTER_MODEL = "deepseek/deepseek-chat";
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-const globalForAnthropic = globalThis as unknown as {
-  anthropic: Anthropic | undefined;
-};
+function getGeminiUrl(): string {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return "";
+  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`;
+}
 
-function createClient(): Anthropic {
-  return new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || "",
+// ─── Gemini call ───
+async function callGemini(
+  systemPrompt: string,
+  contents: { role: string; parts: { text: string }[] }[],
+  maxTokens: number
+): Promise<string> {
+  const url = getGeminiUrl();
+  if (!url) throw new Error("NO_GEMINI_KEY");
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 },
+    }),
   });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.warn(`Gemini API error: ${res.status}`);
+    throw new Error(`GEMINI_${res.status}`);
+  }
+
+  const data = await res.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
-export const anthropic = globalForAnthropic.anthropic ?? createClient();
+// ─── OpenRouter call ───
+async function callOpenRouter(
+  systemPrompt: string,
+  messages: { role: string; content: string }[],
+  maxTokens: number
+): Promise<string> {
+  const key = process.env.ANTHROPIC_API_KEY; // This holds the OpenRouter key
+  if (!key) throw new Error("No OpenRouter API key (ANTHROPIC_API_KEY) set");
 
-if (process.env.NODE_ENV !== "production") {
-  globalForAnthropic.anthropic = anthropic;
+  const res = await fetch(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "http://localhost:3000",
+      "X-Title": "AgriSaarthi",
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      max_tokens: maxTokens,
+      messages: [{ role: "system", content: systemPrompt }, ...messages],
+    }),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error("OpenRouter API error:", res.status, errBody);
+    throw new Error(`OpenRouter returned ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "";
 }
 
-export const CLAUDE_MODEL = "claude-sonnet-4-20250514";
+// ─── Public helpers (try Gemini → fallback OpenRouter) ───
 
 /**
  * Build a system prompt that includes farmer context.
@@ -52,45 +109,75 @@ Always provide practical, region-specific advice. When responding in Hindi, use 
 }
 
 /**
- * Call Claude with a simple prompt and return the text response.
+ * Call AI with a simple system + user prompt. Tries Gemini first, falls back to OpenRouter.
  */
 export async function callClaude(
   systemPrompt: string,
   userMessage: string,
   maxTokens = 2000
 ): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: maxTokens,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
+  // 1) Try Gemini
+  try {
+    const result = await callGemini(
+      systemPrompt,
+      [{ role: "user", parts: [{ text: userMessage }] }],
+      maxTokens
+    );
+    if (result) return result;
+  } catch (err: any) {
+    console.warn("Gemini failed, falling back to OpenRouter:", err.message);
+  }
 
-  const textBlock = response.content.find((b) => b.type === "text");
-  return textBlock?.text || "";
+  // 2) Fallback to OpenRouter
+  try {
+    const result = await callOpenRouter(
+      systemPrompt,
+      [{ role: "user", content: userMessage }],
+      maxTokens
+    );
+    if (result) return result;
+  } catch (err: any) {
+    console.error("OpenRouter fallback also failed:", err.message);
+  }
+
+  return "Maaf kijiye, abhi service uplabdh nahi hai. Kripya thodi der baad prayaas karein.";
 }
 
 /**
- * Stream Claude response as an async generator for SSE.
+ * Call AI with full message history (for multi-turn chat / IVR).
+ * Tries Gemini first, falls back to OpenRouter.
  */
-export async function* streamClaude(
+export async function callClaudeWithHistory(
   systemPrompt: string,
-  userMessage: string,
-  maxTokens = 2000
-): AsyncGenerator<string> {
-  const stream = anthropic.messages.stream({
-    model: CLAUDE_MODEL,
-    max_tokens: maxTokens,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
-
-  for await (const event of stream) {
-    if (
-      event.type === "content_block_delta" &&
-      event.delta.type === "text_delta"
-    ) {
-      yield event.delta.text;
-    }
+  messages: { role: "user" | "assistant"; content: string }[],
+  maxTokens = 200
+): Promise<string> {
+  // 1) Try Gemini
+  try {
+    const geminiContents = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+    const result = await callGemini(systemPrompt, geminiContents, maxTokens);
+    if (result) return result;
+  } catch (err: any) {
+    console.warn("Gemini failed, falling back to OpenRouter:", err.message);
   }
+
+  // 2) Fallback to OpenRouter
+  try {
+    const openRouterMsgs = messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+    const result = await callOpenRouter(systemPrompt, openRouterMsgs, maxTokens);
+    if (result) return result;
+  } catch (err: any) {
+    console.error("OpenRouter fallback also failed:", err.message);
+  }
+
+  return "Maaf kijiye, abhi service uplabdh nahi hai. Kripya thodi der baad prayaas karein.";
 }
+
+// Keep this export so any file importing CLAUDE_MODEL still works
+export const CLAUDE_MODEL = GEMINI_MODEL;

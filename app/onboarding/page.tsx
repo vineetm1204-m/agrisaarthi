@@ -173,35 +173,46 @@ export default function OnboardingPage() {
     setIsSubmitting(true);
     setError(null);
 
-    const payload = {
-      fullName: data.fullName,
+    const farmerPayload = {
+      name: data.fullName,
+      phone: currentUser.phoneNumber ?? undefined,
       state: data.state,
       district: data.district,
-      languagePreference: data.languagePreference,
-      field: {
-        name: data.fieldName,
-        areaAcres: Number(data.areaAcres),
-        soilType: data.soilType,
-        crop: data.crop,
-        sowingDate: data.sowingDate,
-        location: data.location,
-      },
-      ivrEnabled: data.ivrEnabled,
-      ivrNumber: data.ivrEnabled ? IVR_NUMBER : null,
-      firebaseUid: currentUser.uid,
-      phoneNumber: currentUser.phoneNumber ?? null,
-      email: currentUser.email ?? null,
+      languagePref: data.languagePreference,
+      primaryCrop: data.crop,
+      landSizeAcres: Number(data.areaAcres),
+    };
+
+    const fieldPayload = {
+      name: data.fieldName,
+      areaAcres: Number(data.areaAcres),
+      soilType: data.soilType,
+      currentCrop: data.crop,
+      sowingDate: data.sowingDate,
+      lat: data.location.lat ?? undefined,
+      lng: data.location.lng ?? undefined,
     };
 
     try {
-      const response = await apiFetch("/api/farmer/register", {
+      // 1. Create Farmer
+      const farmerRes = await apiFetch("/api/farmer", {
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(farmerPayload),
       });
 
-      if (!response.ok) {
-        const message = await response.text();
+      if (!farmerRes.ok) {
+        const message = await farmerRes.text();
         throw new Error(message || "Registration failed");
+      }
+
+      // 2. Create Field
+      const fieldRes = await apiFetch("/api/fields", {
+        method: "POST",
+        body: JSON.stringify(fieldPayload),
+      });
+
+      if (!fieldRes.ok) {
+        console.warn("Field creation failed, but farmer was created.");
       }
 
       await setDoc(
