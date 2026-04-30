@@ -103,30 +103,23 @@ export default function LoginPage() {
       setAuthToken(token);
 
       try {
-        const profileDoc = await getDoc(doc(db, FARMER_COLLECTION, user.uid));
-        if (profileDoc.exists()) {
+        // Check if farmer exists in our database
+        const res = await fetch("/api/farmer", {
+          headers: {
+            "x-farmer-phone": user.phoneNumber ?? "",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        
+        if (res.ok) {
           router.replace("/dashboard");
           return;
         }
-
-        if (user.phoneNumber) {
-          const byPhone = query(
-            collection(db, FARMER_COLLECTION),
-            where("phoneNumber", "==", user.phoneNumber)
-          );
-          const matches = await getDocs(byPhone);
-          if (!matches.empty) {
-            router.replace("/dashboard");
-            return;
-          }
-        }
-      } catch (dbErr) {
-        console.warn("Firestore read failed (likely missing permissions). Bypassing to dashboard.", dbErr);
-        // Fallback to dashboard for now since we're using mocked API data anyway
-        router.replace("/dashboard");
-        return;
+      } catch (err) {
+        console.warn("Failed to check farmer profile.", err);
       }
 
+      // If not found or error checking, proceed to onboarding
       router.replace("/onboarding");
     } catch (err) {
       console.error("Post auth setup failed:", err);
