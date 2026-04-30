@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/price-alerts",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/cron/weather",
