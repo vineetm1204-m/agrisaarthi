@@ -31,7 +31,7 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { language, sidebarOpen, setSidebarOpen } = useAppStore();
-  const t = translations[language];
+  const t = translations[language as keyof typeof translations] || translations.hi;
 
   const closeSidebar = () => setSidebarOpen(false);
 

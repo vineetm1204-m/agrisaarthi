@@ -18,6 +18,7 @@ function DemoBannerContent() {
         id: "demo-farmer-001",
         name: "Vineet Mittal",
         phone: "+91 7049915277",
+        village: "Demo Village",
         district: "Gwalior",
         state: "Madhya Pradesh",
         language: "hi",

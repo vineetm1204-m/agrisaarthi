@@ -16,7 +16,7 @@ export default function Navbar() {
     notifications,
     toggleSidebar,
   } = useAppStore();
-  const t = translations[language];
+  const t = translations[language as keyof typeof translations] || translations.hi;
 
   const router = useRouter();
 
