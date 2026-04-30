@@ -1,9 +1,9 @@
 // ──────────────────────────────────────────────
-// POST /api/disease/explain – SSE streaming disease explanation via Claude
+// POST /api/disease/explain – Disease explanation via Gemini
 // ──────────────────────────────────────────────
 
 import { supabase } from "@/lib/supabaseClient";
-import { streamClaude, buildFarmerSystemPrompt } from "@/lib/server/claude";
+import { callClaude, buildFarmerSystemPrompt } from "@/lib/server/claude";
 import { z } from "zod";
 
 const explainSchema = z.object({
@@ -48,12 +48,17 @@ If the language is Hindi, respond in simple Hindi using Devanagari script.`
 
     const userMessage = `Explain the disease "${validated.diseaseName}" affecting ${validated.crop || "crops"} in detail. Provide treatment and prevention advice.`;
 
-    // Create SSE stream
+    const fullText = await callClaude(systemPrompt, userMessage, 1500);
+
+    // Stream the full response as SSE chunks for the frontend
     const encoder = new TextEncoder();
+    const words = fullText.split(" ");
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of streamClaude(systemPrompt, userMessage, 1500)) {
+          // Send words in small batches to simulate streaming
+          for (let i = 0; i < words.length; i += 4) {
+            const chunk = words.slice(i, i + 4).join(" ") + " ";
             const data = `data: ${JSON.stringify({ text: chunk })}\n\n`;
             controller.enqueue(encoder.encode(data));
           }
