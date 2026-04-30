@@ -68,7 +68,7 @@ function FieldMoistureMap({
   t,
 }: {
   sections: IrrigationData["sections"];
-  t: typeof dashboardTranslations.en;
+  t: Record<string, string>;
 }) {
   const cols = 3;
   const cellW = 90;
@@ -150,7 +150,7 @@ const containerVariants = {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
 };
 
 // ─── Main Dashboard ───

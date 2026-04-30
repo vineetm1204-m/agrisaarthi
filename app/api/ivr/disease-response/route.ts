@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     })}.`;
 
   const responseText =
-    (await callClaude({ system, user: speech, maxTokens: 240 })) ??
+    (await callClaude(system, speech, 240)) ??
     "Maaf kijiye, abhi main is rog ka uttar nahi de pa raha hoon.";
 
   await logIvrCall({

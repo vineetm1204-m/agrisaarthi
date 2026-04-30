@@ -17,16 +17,14 @@ function DemoBannerContent() {
       setFarmer({
         id: "demo-farmer-001",
         name: "Vineet Mittal",
-        phone: "+919876543210",
+        phone: "+91 7049915277",
         district: "Gwalior",
         state: "Madhya Pradesh",
         language: "hi",
         primaryCrop: "Wheat",
-        landSizeAcres: 5,
         sowingDate: "2025-11-15",
         avatarUrl: "",
         ivrEnabled: true,
-        ivrLanguage: "hi",
         ivrNumber: "+19387863936",
       });
       // In a real app, we might also intercept fetch requests or set a cookie 

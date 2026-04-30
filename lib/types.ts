@@ -17,6 +17,10 @@ export interface FarmerProfile {
   sowingDate?: string; // ISO date string
   ivrEnabled?: boolean;
   ivrNumber?: string | null;
+  ivrLanguage?: string;
+  crops?: string[];
+  location?: { state?: string; district?: string };
+  landSizeAcres?: number;
 }
 
 export interface FieldSection {

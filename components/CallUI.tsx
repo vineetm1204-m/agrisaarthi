@@ -70,9 +70,8 @@ export function CallUI() {
 
           speakText(data.reply, () => {
             // After speaking, go back to listening
-            if (status !== 'ended') {
-              startListeningLoop();
-            }
+            // After speaking, go back to listening
+            startListeningLoop();
           });
 
         } catch (error) {
@@ -87,7 +86,7 @@ export function CallUI() {
           }]);
           
           speakText(fallback, () => {
-            if (status !== 'ended') startListeningLoop();
+            startListeningLoop();
           });
         }
       },
@@ -98,12 +97,12 @@ export function CallUI() {
         } else if (errorType === 'no-speech') {
           setStatus('speaking');
           speakText('Mujhe aawaz nahi aayi. Kya aap dobara bol sakte hain?', () => {
-             if (status !== 'ended') startListeningLoop();
+             startListeningLoop();
           });
         } else if (errorType === 'network') {
           setStatus('speaking');
           speakText('Internet connection mein kuch dikkat hai. Thodi der baad try karein.', () => {
-             if (status !== 'ended') startListeningLoop();
+             startListeningLoop();
           });
         }
         

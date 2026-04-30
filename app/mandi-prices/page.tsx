@@ -44,12 +44,14 @@ export default function MandiPricesPage() {
   // Initialize from farmer profile if available
   useEffect(() => {
     if (farmer) {
-      if (farmer.crops && farmer.crops.length > 0) {
-        setCrop(farmer.crops[0]);
+      if (farmer.primaryCrop) {
+        setCrop(farmer.primaryCrop);
       }
-      if (farmer.location) {
-        setState(farmer.location.state || "Uttar Pradesh");
-        setDistrict(farmer.location.district || "Agra");
+      if (farmer.state) {
+        setState(farmer.state);
+      }
+      if (farmer.district) {
+        setDistrict(farmer.district);
       }
     }
   }, [farmer]);
@@ -254,11 +256,11 @@ export default function MandiPricesPage() {
                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} tickFormatter={(val) => `₹${val}`} />
                         <Tooltip 
                           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value: number) => [formatINR(value), ""]}
+                          formatter={(value: any) => [formatINR(value), ""]}
                         />
                         <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                         <Line type="monotone" dataKey="price" name={crop} stroke="#10b981" strokeWidth={3} dot={false} />
-                        <Line type="monotone" dataKey="crop2" name={farmer?.crops[1] || "Rice"} stroke="#6366f1" strokeWidth={3} dot={false} />
+                        <Line type="monotone" dataKey="crop2" name="Rice" stroke="#6366f1" strokeWidth={3} dot={false} />
                       </LineChart>
                     ) : (
                       <AreaChart data={trendData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
@@ -273,7 +275,7 @@ export default function MandiPricesPage() {
                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} tickFormatter={(val) => `₹${val}`} domain={['auto', 'auto']} />
                         <Tooltip 
                           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value: number) => [formatINR(value), "Modal Price"]}
+                          formatter={(value: any) => [formatINR(value), "Modal Price"]}
                         />
                         <Area type="monotone" dataKey="price" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
                       </AreaChart>

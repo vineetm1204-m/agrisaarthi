@@ -125,15 +125,15 @@ export default function GovtSchemesPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <MapPin className="text-gray-400" size={18} />
-                <span className="text-sm font-medium">{farmer.location?.state || "Unknown State"}</span>
+                <span className="text-sm font-medium">{farmer.state || "Unknown State"}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Landmark className="text-gray-400" size={18} />
-                <span className="text-sm font-medium">{farmer.landSizeAcres || 0} Acres ({farmer.landSizeAcres && farmer.landSizeAcres <= 2 ? 'Small/Marginal' : 'Large'})</span>
+                <span className="text-sm font-medium">{farmer.district || "Unknown District"}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Sprout className="text-gray-400" size={18} />
-                <span className="text-sm font-medium">{farmer.crops?.[0] || "No Primary Crop"}</span>
+                <span className="text-sm font-medium">{farmer.primaryCrop || "No Primary Crop"}</span>
               </div>
             </div>
           </div>

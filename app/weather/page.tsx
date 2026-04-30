@@ -22,7 +22,7 @@ export default function WeatherDashboard() {
   const [selectedDay, setSelectedDay] = useState<number>(0);
 
   const isHindi = language === "hi";
-  const district = farmer?.location?.district || "Pune";
+  const district = farmer?.district || "Pune";
 
   const fetchWeather = async () => {
     setLoading(true);
@@ -85,7 +85,7 @@ export default function WeatherDashboard() {
         <div>
           <h1>{isHindi ? "मौसम" : "Weather Center"}</h1>
           <p className="text-muted text-lg flex items-center gap-2">
-            <MapPin size={18} /> {data.location}, {farmer.location?.state || "India"}
+            <MapPin size={18} /> {data.location}, {farmer?.state || "India"}
           </p>
         </div>
         <div className="flex items-center gap-2">
