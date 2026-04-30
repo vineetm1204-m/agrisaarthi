@@ -10,6 +10,7 @@ import {
   TrendingUp,
   CloudSun,
   Landmark,
+  Leaf,
   Phone,
   UserCircle,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const navItems = [
   { key: "mandiPrices" as const, href: "/mandi-prices", icon: TrendingUp },
   { key: "weather" as const, href: "/weather", icon: CloudSun },
   { key: "govtSchemes" as const, href: "/govt-schemes", icon: Landmark },
+  { key: "carbonCredit" as const, href: "/carbon-credit", icon: Leaf },
   { key: "ivrVoice" as const, href: "/ivr-voice", icon: Phone },
   { key: "account" as const, href: "/account", icon: UserCircle },
 ];

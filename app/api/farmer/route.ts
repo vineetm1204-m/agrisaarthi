@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const phone = req.headers.get("x-farmer-phone");
 
     // In development, return a default farmer or the first farmer
-    if (!phone || phone === "+919876543210") {
+    if (!phone || phone === "+91 7049915277") {
       const { data: farmer, error } = await supabase
         .from("farmers")
         .select("*, fields(*)")
@@ -26,15 +26,16 @@ export async function GET(req: Request) {
         // Return a seeded farmer for dev
         return NextResponse.json({
           id: "dev-farmer",
-          name: "Ramesh Kumar",
-          phone: "+919876543210",
-          village: "Sultanpur",
-          district: "Pratapgarh",
-          state: "Uttar Pradesh",
+          name: "Vineet Mittal",
+          phone: "+91 7049915277",
+          village: "Gwalior",
+          district: "Gwalior",
+          state: "Madhya Pradesh",
           avatarUrl: "",
           language: "hi",
           primaryCrop: "Wheat",
           sowingDate: "2025-11-15",
+          landSizeAcres: 10,
         });
       }
 

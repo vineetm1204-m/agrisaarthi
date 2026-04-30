@@ -652,6 +652,20 @@ body {
 .stagger-children > *:nth-child(5) { animation-delay: 240ms; }
 .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
 
+/* Pulse animation */
+.animate-pulse-slow {
+  animation: pulseSlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* ─── Auth + Onboarding ─── */
 .auth-shell {
   min-height: 100dvh;

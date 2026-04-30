@@ -17,6 +17,7 @@ export const translations = {
     mandiPrices: "Mandi Prices",
     weather: "Weather",
     govtSchemes: "Govt Schemes",
+    carbonCredit: "Carbon Credits",
     ivrVoice: "IVR / Voice",
     account: "Account",
 
@@ -28,6 +29,7 @@ export const translations = {
     mandiPricesTitle: "Mandi Prices",
     weatherTitle: "Weather Forecast",
     govtSchemesTitle: "Government Schemes",
+    carbonCreditTitle: "Carbon Credit Calculator",
     ivrVoiceTitle: "IVR / Voice Assistant",
     accountTitle: "Account Settings",
 
@@ -53,6 +55,7 @@ export const translations = {
     mandiPrices: "मंडी भाव",
     weather: "मौसम",
     govtSchemes: "सरकारी योजनाएँ",
+    carbonCredit: "कार्बन क्रेडिट",
     ivrVoice: "IVR / आवाज़",
     account: "खाता",
 
@@ -64,6 +67,7 @@ export const translations = {
     mandiPricesTitle: "मंडी भाव",
     weatherTitle: "मौसम पूर्वानुमान",
     govtSchemesTitle: "सरकारी योजनाएँ",
+    carbonCreditTitle: "कार्बन क्रेडिट",
     ivrVoiceTitle: "IVR / आवाज़ सहायक",
     accountTitle: "खाता सेटिंग्स",
 
