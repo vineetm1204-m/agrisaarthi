@@ -50,6 +50,7 @@ export default function SmartIrrigationPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            fieldId: selectedField!.id,
             crop_type: selectedField!.crop,
             area_acres: (selectedField!.areaSqFt / 43560).toFixed(2),
             soil_type: selectedField!.soilType,

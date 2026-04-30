@@ -24,10 +24,16 @@ export async function GET(
 
     if (!logs || logs.length === 0) {
       // Return mock data for fields without history
-      const mockHistory = Array.from({ length: 14 }, (_, i) => ({
-        date: new Date(Date.now() - i * 86400000).toISOString().split("T")[0],
-        waterUsed: Math.round(300 + Math.random() * 400),
-      }));
+      const mockHistory = Array.from({ length: 14 }, (_, i) => {
+        const recommended = Math.round(300 + Math.random() * 200);
+        const actual = Math.round(recommended * (0.8 + Math.random() * 0.4));
+        return {
+          date: new Date(Date.now() - (13 - i) * 86400000).toISOString().split("T")[0],
+          waterUsed: actual,
+          recommended,
+          actual,
+        };
+      });
       return NextResponse.json(mockHistory);
     }
 
