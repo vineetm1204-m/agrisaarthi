@@ -23,7 +23,7 @@ function DemoBannerContent() {
         state: "Madhya Pradesh",
         language: "hi",
         primaryCrop: "Wheat",
-        landSizeAcres: 10,
+        landSizeAcres: 5,
         sowingDate: "2025-11-15",
         avatarUrl: "",
         ivrEnabled: true,
