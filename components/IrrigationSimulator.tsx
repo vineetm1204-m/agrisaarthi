@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Play, Droplets, Sun, Wind, CloudRain, CheckCircle, Save } from "lucide-react";
+import { Play, Droplets, Sun, Wind, CloudRain, CheckCircle, Save, Thermometer } from "lucide-react";
 import toast from "react-hot-toast";
 
 type Mode = "auto" | "manual" | "ml";

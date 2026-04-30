@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Bell, Menu, User, LogOut, CheckCircle, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { translations } from "@/lib/translations";
+import { clearAuthToken } from "@/lib/api";
 
 export default function Navbar() {
   const {
@@ -50,6 +51,8 @@ export default function Navbar() {
 
   const handleLogout = () => {
     useAppStore.getState().setFarmer(null as any); // Clear store
+    useAppStore.getState().setFields([]); // Clear fields
+    clearAuthToken();
     router.push("/login");
   };
 

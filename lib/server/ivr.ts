@@ -217,8 +217,13 @@ export async function getIvrSettings(farmerId: string): Promise<IvrSettings | nu
     if (error || !farmer) return null;
 
     return {
+
+      enabled: farmer.ivr_enabled !== false,
+      number: farmer.ivr_number,
+
       enabled: farmer.ivr_enabled ?? true,
       number: farmer.ivr_number ?? null,
+
     };
   } catch (err) {
     console.warn("Unable to get IVR settings:", err);
@@ -226,6 +231,9 @@ export async function getIvrSettings(farmerId: string): Promise<IvrSettings | nu
   }
 }
 
+
+export async function setIvrSettings(farmerId: string, settings: IvrSettings): Promise<boolean> {
+  if (!farmerId) return false;
 export async function setIvrSettings(farmerId: string, settings: IvrSettings): Promise<void> {
   if (!farmerId) return;
   try {
@@ -238,6 +246,12 @@ export async function setIvrSettings(farmerId: string, settings: IvrSettings): P
       .eq("id", farmerId);
 
     if (error) throw error;
+
+    return true;
+  } catch (err) {
+    console.warn("Unable to set IVR settings:", err);
+    return false;
+
   } catch (err) {
     console.warn("Unable to set IVR settings:", err);
     throw err;
