@@ -67,20 +67,27 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (farmer) {
-      // Fetch fresh data
+      // Initialize with global store first to prevent loading lock
+      setProfile(farmer);
+      
+      // Fetch fresh data from DB
       fetch(`/api/farmer/${farmer.id}`)
         .then(r => r.json())
         .then(data => {
-          if (!data.error) setProfile(data);
-        });
+          if (!data.error && data.id) {
+            setProfile(data);
+          }
+        })
+        .catch(err => console.error("Failed to fetch fresh profile data", err));
         
       fetch(`/api/farmer/${farmer.id}/notifications`)
         .then(r => r.json())
         .then(data => {
           if (!data.error) setNotifs(data);
-        });
+        })
+        .catch(err => console.error("Failed to fetch notifs", err));
     }
-  }, [farmer?.id]);
+  }, [farmer]);
 
   if (!farmer || !profile) {
     return <div className="dash-page flex justify-center items-center h-[60vh]"><div className="loading-spinner"></div></div>;
@@ -173,6 +180,24 @@ export default function AccountPage() {
                     <input className="form-input mt-1" value={profile.state} onChange={e => handleProfileChange('state', e.target.value)} />
                   ) : (
                     <div className="text-md font-medium text-gray-700 mt-1">{profile.state}</div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 uppercase">Primary Crop</label>
+                  {isEditing ? (
+                    <input className="form-input mt-1" value={profile.primaryCrop || ''} onChange={e => handleProfileChange('primaryCrop', e.target.value)} />
+                  ) : (
+                    <div className="text-md font-medium text-gray-700 mt-1 flex items-center gap-2"><Sprout size={16} className="text-gray-400"/> {profile.primaryCrop || "Not Set"}</div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 uppercase">Land Size (Acres)</label>
+                  {isEditing ? (
+                    <input type="number" className="form-input mt-1" value={profile.landSizeAcres || ''} onChange={e => handleProfileChange('landSizeAcres', Number(e.target.value))} />
+                  ) : (
+                    <div className="text-md font-medium text-gray-700 mt-1">{profile.landSizeAcres || 0} Acres</div>
                   )}
                 </div>
               </div>

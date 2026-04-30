@@ -106,6 +106,7 @@ export async function PATCH(
       state: farmer.state,
       language: farmer.language_pref,
       primaryCrop: farmer.primary_crop,
+      landSizeAcres: farmer.land_size_acres,
       ivrEnabled: farmer.ivr_enabled,
       ivrLanguage: farmer.ivr_language,
       ivrNumber: farmer.ivr_number,
