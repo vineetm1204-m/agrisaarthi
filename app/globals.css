@@ -272,6 +272,8 @@ body {
 /* Hamburger */
 .hamburger-btn {
   display: none;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
   border: none;
@@ -279,8 +281,6 @@ body {
   color: var(--text-primary);
   cursor: pointer;
   border-radius: var(--radius-md);
-  align-items: center;
-  justify-content: center;
   transition: background var(--transition-fast);
 }
 
@@ -302,6 +302,25 @@ body {
   transition: transform var(--transition-base);
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.sidebar-header {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-logo-icon {
+  font-size: 24px;
+}
+
+.sidebar-logo-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
 }
 
 .sidebar-nav {
@@ -543,74 +562,54 @@ body {
 }
 
 /* ─── Responsive ─── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .hamburger-btn {
-    display: none;
+    display: flex;
   }
-
-  .navbar-tagline {
-    display: none;
-  }
-
   .sidebar {
-    transform: none !important;
-    top: auto;
+    transform: translateX(-100%);
+    width: 280px;
+    z-index: 1000;
+    top: 0;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 65px;
-    flex-direction: row;
-    z-index: 100;
-    overflow: hidden;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    height: 100dvh;
+    box-shadow: none;
   }
-
-  .sidebar-backdrop {
-    display: none !important;
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg);
   }
-
-  .sidebar-nav {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0 4px;
-    width: 100%;
+  .sidebar-backdrop.visible {
+    display: block;
   }
-
-  .sidebar-link {
-    flex-direction: column;
-    gap: 4px;
-    padding: 8px 4px;
-    flex: 1;
-    justify-content: center;
-    border-radius: 0;
-    font-size: 10px;
-    min-height: 44px;
+  .main-content {
+    margin-left: 0;
+    margin-bottom: 0;
   }
-
-  .sidebar-link::before {
-    display: none;
-  }
-
-  .sidebar-link.active {
-    background: transparent;
-  }
-
   .sidebar-section-label,
   .sidebar-footer {
-    display: none;
+    display: block;
+  }
+  .sidebar-header {
+    display: flex;
   }
 
   .main-content {
     margin-top: var(--navbar-height);
     margin-left: 0;
-    margin-bottom: 65px;
+    margin-bottom: 0;
     padding: 20px 16px;
   }
 
   .lang-toggle button {
     padding: 5px 8px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-tagline {
+    display: none;
   }
 }
 

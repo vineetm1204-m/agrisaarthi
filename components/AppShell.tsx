@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useAppStore } from "@/lib/store";
@@ -14,16 +13,9 @@ import { apiFetch } from "@/lib/api";
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { setFarmer, setNotifications, setFields } = useAppStore();
-  const pathname = usePathname();
-  const isAuthRoute =
-    pathname.startsWith("/login") || pathname.startsWith("/onboarding");
 
   // Fetch farmer profile, notifications, and fields from API on mount
   useEffect(() => {
-    if (isAuthRoute) {
-      return;
-    }
-
     async function bootstrap() {
       try {
         const [farmerRes, notifRes, fieldsRes] = await Promise.all([
@@ -50,11 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
 
     bootstrap();
-  }, [isAuthRoute, setFarmer, setNotifications, setFields]);
-
-  if (isAuthRoute) {
-    return <>{children}</>;
-  }
+  }, [setFarmer, setNotifications, setFields]);
 
   return (
     <>

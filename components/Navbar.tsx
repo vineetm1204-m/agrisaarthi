@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Bell, Menu, User, LogOut, CheckCircle, X } from "lucide-react";
+import { Search, Bell, Menu, User, LogOut, CheckCircle, X, LayoutDashboard, MapPin, Bug, Droplets, TrendingUp, CloudSun, Landmark, Leaf, Phone, UserCircle } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { translations } from "@/lib/translations";
 import { clearAuthToken } from "@/lib/api";
@@ -28,6 +28,28 @@ export default function Navbar() {
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const searchableItems = [
+    { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { key: "myFields", href: "/my-fields", icon: MapPin },
+    { key: "diseaseDetection", href: "/disease-detection", icon: Bug },
+    { key: "irrigation", href: "/irrigation", icon: Droplets },
+    { key: "mandiPrices", href: "/mandi-prices", icon: TrendingUp },
+    { key: "weather", href: "/weather", icon: CloudSun },
+    { key: "govtSchemes", href: "/govt-schemes", icon: Landmark },
+    { key: "carbonCredit", href: "/carbon-credit", icon: Leaf },
+    { key: "ivrVoice", href: "/ivr-voice", icon: Phone },
+    { key: "account", href: "/account", icon: UserCircle },
+    { key: "logout", href: "#", icon: LogOut, action: "logout" },
+  ];
+
+  const filteredResults = searchQuery.trim() 
+    ? searchableItems.filter(item => {
+        const title = t[item.key as keyof typeof t] || "";
+        return title.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+    : [];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -43,6 +65,10 @@ export default function Navbar() {
       }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setShowProfile(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearch(false);
+        setSearchQuery("");
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -118,24 +144,77 @@ export default function Navbar() {
         )}
 
         {/* Search */}
-        <div className="flex items-center">
-          <div className={`transition-all duration-300 overflow-hidden flex items-center ${showSearch ? "w-48 mr-2" : "w-0"}`}>
+        <div className="flex items-center relative" ref={searchRef}>
+          <div className={`transition-all duration-300 overflow-hidden flex items-center ${showSearch ? "w-64 mr-2" : "w-0"}`}>
             <input
               type="text"
               placeholder={t.searchPlaceholder || "Search..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setShowSearch(true)}
               className="w-full px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              onBlur={() => !searchQuery && setShowSearch(false)}
             />
           </div>
           <button 
             className={`navbar-icon-btn ${showSearch ? "bg-green-50 text-green-600" : ""}`} 
             aria-label={t.searchPlaceholder}
-            onClick={() => setShowSearch(!showSearch)}
+            onClick={() => {
+              if (showSearch) {
+                setShowSearch(false);
+                setSearchQuery("");
+              } else {
+                setShowSearch(true);
+              }
+            }}
           >
             {showSearch ? <X size={19} /> : <Search size={19} />}
           </button>
+
+          {/* Search Results Dropdown */}
+          {showSearch && searchQuery.trim() && (
+            <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="p-2 bg-gray-50/50 border-b border-gray-100">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2">Results for "{searchQuery}"</span>
+              </div>
+              <div className="max-h-[350px] overflow-y-auto p-1">
+                {filteredResults.length > 0 ? (
+                  filteredResults.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link 
+                        key={item.key} 
+                        href={item.href}
+                        onClick={(e) => {
+                          if ((item as any).action === "logout") {
+                            e.preventDefault();
+                            handleLogout();
+                          }
+                          setShowSearch(false);
+                          setSearchQuery("");
+                        }}
+                        className="flex items-center gap-3 px-3 py-2.5 hover:bg-green-50 rounded-lg transition-all group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                          <Icon size={16} className="text-gray-500 group-hover:text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800 group-hover:text-green-700">
+                            {t[item.key as keyof typeof t]}
+                          </p>
+                          <p className="text-[10px] text-gray-500">Go to {item.key.replace(/([A-Z])/g, ' $1').toLowerCase()}</p>
+                        </div>
+                      </Link>
+                    );
+                  })
+                ) : (
+                  <div className="p-8 text-center text-gray-400">
+                    <Search className="mx-auto mb-2 opacity-20" size={32} />
+                    <p className="text-sm">No results found for "{searchQuery}"</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Notifications */}

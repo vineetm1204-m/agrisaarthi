@@ -22,7 +22,7 @@ export default function WeatherDashboard() {
   const [selectedDay, setSelectedDay] = useState<number>(0);
 
   const isHindi = language === "hi";
-  const district = farmer?.district || "Pune";
+  const district = farmer?.district || "Gwalior";
 
   const fetchWeather = async () => {
     setLoading(true);
