@@ -1,3 +1,7 @@
+<div align="center">
+
+<!-- <img src="https://raw.githubusercontent.com/vineetm1204-m/agrisaarthi/main/public/logo.png" alt="AgriSaarthi Logo" width="100" height="100" onerror="this.style.display='none'"/> -->
+
 # 🌾 AgriSaarthi
 
 ### *Har Kisan Ka Digital Saathi*
@@ -354,13 +358,13 @@ Contributions, issues, and feature requests are welcome.
 Designed and developed by **Vineet Mittal** and **Team NullPointers**.
 
 
-  Built for ZYNK — an internal college hackathon.
-  Shipped from zero in under 5 hours on the spot.
-  Demo mode: farmer profile is pre-configured (Gwalior, MP).
-  Data sources: mix of live APIs (weather, mandi), 
-  simulated values (irrigation ML, carbon credits), 
-  and the plant disease model via external hosted API.
-  Auth is bypassed in demo — Firebase configured but login skipped.
+* Built for ZYNK — an internal college hackathon.
+* Shipped from zero in under 5 hours on the spot.
+* Demo mode: farmer profile is pre-configured (Gwalior, MP).
+* Data sources: mix of live APIs (weather, mandi), 
+* simulated values (irrigation ML, carbon credits), 
+* and the plant disease model via external hosted API.
+* Auth is bypassed in demo — Firebase configured but login skipped.
 
 
 ---
