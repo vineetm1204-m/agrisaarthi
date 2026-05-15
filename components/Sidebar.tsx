@@ -13,6 +13,7 @@ import {
   Leaf,
   Phone,
   UserCircle,
+  X,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { translations } from "@/lib/translations";
@@ -46,6 +47,18 @@ export default function Sidebar() {
       />
 
       <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
+        <div className="sidebar-header">
+          <div className="flex items-center gap-2">
+            <span className="sidebar-logo-icon">🌾</span>
+            <span className="sidebar-logo-text">AgriSaarthi</span>
+          </div>
+          <button 
+            className="lg:hidden p-2 text-gray-400 hover:text-white" 
+            onClick={closeSidebar}
+          >
+            <X size={20} />
+          </button>
+        </div>
         <nav className="sidebar-nav">
           <span className="sidebar-section-label">
             {language === "hi" ? "मुख्य मेनू" : "Main Menu"}

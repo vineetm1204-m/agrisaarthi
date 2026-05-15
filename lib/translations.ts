@@ -20,6 +20,7 @@ export const translations = {
     carbonCredit: "Carbon Credits",
     ivrVoice: "IVR / Voice",
     account: "Account",
+    logout: "Logout",
 
     // Page titles
     dashboardTitle: "Dashboard",
@@ -58,6 +59,7 @@ export const translations = {
     carbonCredit: "कार्बन क्रेडिट",
     ivrVoice: "IVR / आवाज़",
     account: "खाता",
+    logout: "लॉगआउट",
 
     // Page titles
     dashboardTitle: "डैशबोर्ड",

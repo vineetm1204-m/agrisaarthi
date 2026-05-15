@@ -26,11 +26,11 @@ export async function GET(req: Request) {
         // Return a seeded farmer for dev
         return NextResponse.json({
           id: "dev-farmer",
-          name: "Ramesh Kumar",
-          phone: "+919876543210",
-          village: "Gwa",
-          district: "Pratapgarh",
-          state: "Uttar Pradesh",
+          name: "Vineet Mittal",
+          phone: "+91 7049915277",
+          village: "Gwalior",
+          district: "Gwalior",
+          state: "Madhya Pradesh",
           avatarUrl: "",
           language: "hi",
           primaryCrop: "Wheat",
