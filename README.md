@@ -353,7 +353,7 @@ Contributions, issues, and feature requests are welcome.
 
 Designed and developed by **Vineet Mittal** and **Team NullPointers**.
 
-<!-- 
+
   Built for ZYNK — an internal college hackathon.
   Shipped from zero in under 5 hours on the spot.
   Demo mode: farmer profile is pre-configured (Gwalior, MP).
@@ -361,7 +361,7 @@ Designed and developed by **Vineet Mittal** and **Team NullPointers**.
   simulated values (irrigation ML, carbon credits), 
   and the plant disease model via external hosted API.
   Auth is bypassed in demo — Firebase configured but login skipped.
--->
+
 
 ---
 
