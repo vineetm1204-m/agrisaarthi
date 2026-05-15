@@ -1,7 +1,3 @@
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/vineetm1204-m/agrisaarthi/main/public/logo.png" alt="AgriSaarthi Logo" width="100" height="100" onerror="this.style.display='none'"/>
-
 # 🌾 AgriSaarthi
 
 ### *Har Kisan Ka Digital Saathi*
