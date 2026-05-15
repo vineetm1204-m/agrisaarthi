@@ -12,6 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://agrisaarthi.com"),
   title: "AgriSaarthi — Har kisan ka digital saathi",
   description:
     "AgriSaarthi is a comprehensive digital platform for Indian farmers providing disease detection, mandi prices, weather forecasts, irrigation advisories, and government scheme information.",

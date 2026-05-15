@@ -268,7 +268,7 @@ export default function OnboardingPage() {
                   onChange={(event) =>
                     updateData({ fullName: event.target.value })
                   }
-                  placeholder="e.g., Ramesh Kumar"
+                  placeholder="e.g., Vineet Mittal"
                 />
               </div>
               <div className="form-field">
@@ -299,7 +299,7 @@ export default function OnboardingPage() {
                   onChange={(event) =>
                     updateData({ district: event.target.value })
                   }
-                  placeholder={data.state ? "Select district" : "Pick a state first"}
+                  placeholder={data.state ? "e.g., Gwalior" : "Pick a state first"}
                   disabled={!data.state}
                 />
                 <datalist id="district-options">

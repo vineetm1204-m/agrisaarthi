@@ -19,6 +19,7 @@ const DISTRICT_COORDS: Record<string, { lat: number; lng: number }> = {
   Lucknow: { lat: 26.8467, lng: 80.9462 },
   Varanasi: { lat: 25.3176, lng: 82.9739 },
   Indore: { lat: 22.7196, lng: 75.8577 },
+  Gwalior: { lat: 26.2183, lng: 78.1828 },
 };
 
 function generateMockWeatherData(lat: number, lng: number) {

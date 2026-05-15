@@ -7,9 +7,9 @@ import { fetchMandi } from '../../../lib/fetchMandi';
 // Dummy database for farmer profile
 const DUMMY_FARMER = {
   id: 'farmer_123',
-  name: 'Ramesh',
-  district: 'Pune',
-  state: 'Maharashtra',
+  name: 'Vineet Mittal',
+  district: 'Gwalior',
+  state: 'Madhya Pradesh',
   primary_crop: 'Wheat',
   language_pref: 'hi',
   fields: [{ id: 'f1' }]

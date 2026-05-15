@@ -15,7 +15,7 @@ const PUBLIC_PATHS = [
 // Paths that skip auth in development
 const DEV_SKIP_AUTH = process.env.NODE_ENV === "development";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only apply to API routes
